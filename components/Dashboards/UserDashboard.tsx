@@ -935,7 +935,7 @@ const UserDashboard: React.FC<{ user: UserProfile }> = ({ user }) => {
                       </button>
                       <button
                         onClick={() => handleAcknowledge(file)}
-                        disabled={file.status !== 'received' || file.status === 'acknowledged'} // Can only ack if received first
+                        disabled={file.status !== 'received'}
                         className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${file.status === 'acknowledged' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 opacity-50 cursor-not-allowed' : (file.status === 'received' ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'bg-white/5 border border-white/10 opacity-30 cursor-not-allowed')}`}
                       >
                         {file.status === 'acknowledged' ? <CheckCircle size={14} /> : <UserCheck size={14} />}

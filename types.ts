@@ -38,7 +38,7 @@ export interface FileMetadata {
   uploaderId: string;
   uploaderName: string;
   timestamp: string;
-  status: 'active' | 'deleted' | 'received' | 'acknowledged';
+  status: 'active' | 'deleted' | 'uploaded' | 'sent' | 'received' | 'acknowledged';
   permissions: string[];
   // Security Fields
   scanStatus: 'clean' | 'infected' | 'pending';
