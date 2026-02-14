@@ -1,0 +1,20 @@
+[
+  {
+    "id": "USR-4628-377",
+    "email": "bobbadiharsha628@gmail.com",
+    "orgId": "ORG-8921-SCG",
+    "publicKey": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmHUti08zwt00dnHX3Htf\r\nWn9SmYvtaHFAwYtIrVQhXXCQ/E/mzvA3RP6tTY43UCiiZ/XfHbUoRTpL74aTjeZt\r\nos6ggr1R6ZdkowwGPgeMKmbvVFaWv7RdMlINDP+5UdPWKpMO62hYZYDVDdVxMjYd\r\nZgj5pB7IH2yFOrI8y9pwL5zAuHEftAFmZgMGkFHiN40/m58EfZtRfBO/BqJQ96fJ\r\nGJTgqvwPgfVdetl8ziMAp6UPUdO0MAZnDka5qhuca6GErbGNU4YN22aM2N5Roobh\r\nYdb8TJ6YsxKhjYJhvTdioR8lUatIvpsqzSPGEVbkaesUcDoLRmgtbpvguiJJlRye\r\nNwIDAQAB\r\n-----END PUBLIC KEY-----\r\n",
+    "role": "DEVELOPER",
+    "groupId": "GRP-SEC-DEV-377",
+    "timestamp": "2026-02-14T06:40:59.377Z"
+  },
+  {
+    "id": "USR-9676-232",
+    "email": "thupas542@gmail.com",
+    "orgId": "ORG-4452-TNI",
+    "publicKey": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhApKmjhDtpj2ntz8C4nd\r\nzcv9cHDMRBv9D505E1tJEfbZK/nSB79CyUFfHwYAhTOZ3yfGT8ji1WBeo2zCupvC\r\nrThf/r5Fq+BH+Ivkb2p97nQL+RvprU3CNfecEkXixHzd/Cgy/p9E0R8O/uUztJn9\r\n9mViXQUm6W1bloEjMy6sx+bj18eJOfAuyXJIx0JCkxwSBaG9CTL/4nuyT+SXaz11\r\ninCLcbC6fdCd+VXozcY97EmfzD3MhewUfHbCWROQ7yIORzQp3Bj5UlcRm820Mm/6\r\nCebwztCDRmKUWM7bEZaqgy4WZYGPWYgcEDdv/az53lj6XHOHvMoS31fsUXSKIvY/\r\ngwIDAQAB\r\n-----END PUBLIC KEY-----\r\n",
+    "role": "DEVELOPER",
+    "groupId": "GRP-TEC-DEV-232",
+    "timestamp": "2026-02-14T06:46:15.154Z"
+  }
+]

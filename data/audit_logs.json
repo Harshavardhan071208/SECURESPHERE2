@@ -1,0 +1,92 @@
+[
+  {
+    "id": "dl-1771053616276",
+    "timestamp": "2026-02-14T07:20:16.276Z",
+    "userId": "USR-4628-377",
+    "userName": "User",
+    "action": "FILE_DOWNLOAD_ATTEMPT",
+    "details": "Fetching encrypted bundle: organisations/ORG-8921-SCG/USR-4628-377/README.md.enc",
+    "severity": "medium"
+  },
+  {
+    "id": "dl-1771052908417",
+    "timestamp": "2026-02-14T07:08:28.418Z",
+    "userId": "USR-9676-232",
+    "userName": "User",
+    "action": "FILE_DOWNLOAD_ATTEMPT",
+    "details": "Fetching encrypted bundle: organisations/ORG-4452-TNI/USR-9676-232/lint_errors.txt.enc",
+    "severity": "medium"
+  },
+  {
+    "id": "dl-1771051860184",
+    "timestamp": "2026-02-14T06:51:00.184Z",
+    "userId": "USR-9676-232",
+    "userName": "User",
+    "action": "FILE_DOWNLOAD_ATTEMPT",
+    "details": "Fetching encrypted bundle: organisations/ORG-4452-TNI/USR-9676-232/lint_output_clean.txt.enc",
+    "severity": "medium"
+  },
+  {
+    "id": "dl-1771051837940",
+    "timestamp": "2026-02-14T06:50:37.940Z",
+    "userId": "USR-9676-232",
+    "userName": "User",
+    "action": "FILE_DOWNLOAD_ATTEMPT",
+    "details": "Fetching encrypted bundle: organisations/ORG-4452-TNI/USR-9676-232/lint_output_clean.txt.enc",
+    "severity": "medium"
+  },
+  {
+    "id": "dl-1771051780793",
+    "timestamp": "2026-02-14T06:49:40.793Z",
+    "userId": "USR-9676-232",
+    "userName": "User",
+    "action": "FILE_DOWNLOAD_ATTEMPT",
+    "details": "Fetching encrypted bundle: organisations/ORG-4452-TNI/USR-9676-232/lint_output_clean.txt.enc",
+    "severity": "medium"
+  },
+  {
+    "id": "dl-1771050975592",
+    "timestamp": "2026-02-14T06:36:15.592Z",
+    "userId": "USR-9752-994",
+    "userName": "User",
+    "action": "FILE_DOWNLOAD_ATTEMPT",
+    "details": "Fetching encrypted bundle: organisations/ORG-4452-TNI/USR-9752-994/CORS_FIX_INSTRUCTIONS.md.enc",
+    "severity": "medium"
+  },
+  {
+    "id": "dl-1771050950106",
+    "timestamp": "2026-02-14T06:35:50.106Z",
+    "userId": "USR-9752-994",
+    "userName": "User",
+    "action": "FILE_DOWNLOAD_ATTEMPT",
+    "details": "Fetching encrypted bundle: organisations/ORG-4452-TNI/USR-9752-994/CORS_FIX_INSTRUCTIONS.md.enc",
+    "severity": "medium"
+  },
+  {
+    "id": "dl-1770789778809",
+    "timestamp": "2026-02-11T06:02:58.809Z",
+    "userId": "admin1",
+    "userName": "User",
+    "action": "FILE_DOWNLOAD",
+    "details": "Downloaded file: admin1/CORS_FIX_INSTRUCTIONS.md.enc",
+    "severity": "medium"
+  },
+  {
+    "id": "dl-1770744829964",
+    "timestamp": "2026-02-10T17:33:49.964Z",
+    "userId": "admin1",
+    "userName": "User",
+    "action": "FILE_DOWNLOAD",
+    "details": "Downloaded file: admin1/CORS_FIX_INSTRUCTIONS.md.enc",
+    "severity": "medium"
+  },
+  {
+    "id": "mock-1",
+    "timestamp": "2024-02-10T10:00:00.000Z",
+    "userId": "sys-admin",
+    "userName": "System",
+    "action": "SYSTEM_STARTUP",
+    "details": "Audit logging initialized",
+    "severity": "low"
+  }
+]

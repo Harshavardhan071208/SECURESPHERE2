@@ -1,0 +1,98 @@
+[
+  {
+    "id": "notif-1771053688401-we7hw",
+    "toUserId": "USR-4628-377",
+    "fromUserId": "USR-9676-232",
+    "fromOrgId": "ORG-4452-TNI",
+    "type": "FILE_ACKNOWLEDGED",
+    "fileId": "organisations/ORG-4452-TNI/USR-9676-232/lint_output_clean.txt.enc",
+    "fileName": "lint_output_clean.txt",
+    "message": "File 'lint_output_clean.txt' has been ACKNOWLEDGED by thupas542.",
+    "timestamp": "2026-02-14T07:21:28.401Z",
+    "read": false
+  },
+  {
+    "id": "notif-1771053686498-lomqa",
+    "toUserId": "USR-4628-377",
+    "fromUserId": "USR-9676-232",
+    "fromOrgId": "ORG-4452-TNI",
+    "type": "FILE_RECEIVED",
+    "fileId": "organisations/ORG-4452-TNI/USR-9676-232/lint_output_clean.txt.enc",
+    "fileName": "lint_output_clean.txt",
+    "message": "File 'lint_output_clean.txt' has been marked as RECEIVED by thupas542.",
+    "timestamp": "2026-02-14T07:21:26.498Z",
+    "read": false
+  },
+  {
+    "id": "notif-1771053684499-bfuol",
+    "toUserId": "USR-4628-377",
+    "fromUserId": "USR-9676-232",
+    "fromOrgId": "ORG-4452-TNI",
+    "type": "FILE_ACKNOWLEDGED",
+    "fileId": "organisations/ORG-4452-TNI/USR-9676-232/lint_errors.txt.enc",
+    "fileName": "lint_errors.txt",
+    "message": "File 'lint_errors.txt' has been ACKNOWLEDGED by thupas542.",
+    "timestamp": "2026-02-14T07:21:24.499Z",
+    "read": false
+  },
+  {
+    "id": "notif-1771053681996-u83im",
+    "toUserId": "USR-4628-377",
+    "fromUserId": "USR-9676-232",
+    "fromOrgId": "ORG-4452-TNI",
+    "type": "FILE_RECEIVED",
+    "fileId": "organisations/ORG-4452-TNI/USR-9676-232/lint_errors.txt.enc",
+    "fileName": "lint_errors.txt",
+    "message": "File 'lint_errors.txt' has been marked as RECEIVED by thupas542.",
+    "timestamp": "2026-02-14T07:21:21.996Z",
+    "read": false
+  },
+  {
+    "id": "notif-1771053559996-3x0wf",
+    "toUserId": "usr-1771053367769",
+    "fromUserId": "USR-4628-377",
+    "fromOrgId": "ORG-8921-SCG",
+    "type": "FILE_ACKNOWLEDGED",
+    "fileId": "organisations/ORG-8921-SCG/USR-4628-377/README.md.enc",
+    "fileName": "README.md",
+    "message": "File 'README.md' has been ACKNOWLEDGED by bobbadiharsha628.",
+    "timestamp": "2026-02-14T07:19:19.996Z",
+    "read": false
+  },
+  {
+    "id": "notif-1771053556573-mm5j7",
+    "toUserId": "usr-1771053367769",
+    "fromUserId": "USR-4628-377",
+    "fromOrgId": "ORG-8921-SCG",
+    "type": "FILE_RECEIVED",
+    "fileId": "organisations/ORG-8921-SCG/USR-4628-377/README.md.enc",
+    "fileName": "README.md",
+    "message": "File 'README.md' has been marked as RECEIVED by bobbadiharsha628.",
+    "timestamp": "2026-02-14T07:19:16.573Z",
+    "read": false
+  },
+  {
+    "id": "notif-1771053496346-spiai",
+    "toUserId": "USR-4628-377",
+    "fromUserId": "usr-1771053367769",
+    "fromOrgId": "ORG-4452-TNI",
+    "type": "FILE_SHARED",
+    "fileId": "organisations/ORG-4452-TNI/usr-1771053367769/README.md.enc",
+    "fileName": "README.md",
+    "message": "You have received a file from TechNode Industries - thupas542.",
+    "timestamp": "2026-02-14T07:18:16.346Z",
+    "read": false
+  },
+  {
+    "id": "notif-1771052814795-lf55d",
+    "toUserId": "USR-9676-232",
+    "fromUserId": "USR-4628-377",
+    "fromOrgId": "ORG-8921-SCG",
+    "type": "FILE_SHARED",
+    "fileId": "organisations/ORG-8921-SCG/USR-4628-377/lint_errors.txt.enc",
+    "fileName": "lint_errors.txt",
+    "message": "You have received a file from SecureCorp Global - bobbadiharsha628.",
+    "timestamp": "2026-02-14T07:06:54.795Z",
+    "read": true
+  }
+]
