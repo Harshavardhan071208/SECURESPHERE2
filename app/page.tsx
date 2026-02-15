@@ -480,7 +480,12 @@ export default function Home() {
     try {
       // Allow super admin login bypass (optional, keeping existing logic check)
       if (selectedRole === UserRole.SUPER_ADMIN && email === 'admin@securesphere.com' && password === 'admin123') {
+
         setUser(MOCK_USERS[0]);
+
+        // Audit Log Login
+        fetch('/api/log-event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orgId: MOCK_USERS[0].orgId, userId: MOCK_USERS[0].id, action: 'LOGIN' }) }).catch(console.error);
+
         setView('DASHBOARD');
         setActiveTab('dashboard');
         setIsProcessing(false);
@@ -610,7 +615,12 @@ export default function Home() {
           };
         }
 
+
         setUser(mockUserForNow);
+
+        // Audit Log Login
+        fetch('/api/log-event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orgId: mockUserForNow.orgId, userId: mockUserForNow.id, action: 'LOGIN' }) }).catch(console.error);
+
         setView('DASHBOARD');
         setActiveTab('dashboard');
       } else {
@@ -696,7 +706,12 @@ export default function Home() {
             publicKey: undefined
           };
         }
+
         setUser(sessionUser);
+
+        // Audit Log Login
+        fetch('/api/log-event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orgId: sessionUser.orgId, userId: sessionUser.id, action: 'LOGIN' }) }).catch(console.error);
+
         setView('DASHBOARD');
         setActiveTab('dashboard');
         return;

@@ -68,8 +68,15 @@ export async function GET(req: NextRequest) {
         const s3Response = await s3.send(command);
         const metadata = s3Response.Metadata || {};
 
+
         // 2. Log Audit Event
-        appendAuditLog(userId, userName, 'FILE_DOWNLOAD_ATTEMPT', `Fetching encrypted bundle: ${fileKey}`);
+        const { logAuditEvent } = await import('@/lib/audit-logger');
+        await logAuditEvent({
+            orgId: orgId || 'unknown',
+            userId: userId,
+            action: 'DOWNLOAD',
+            fileName: fileKey.split('/').pop() || fileKey
+        });
 
         // 3. Prepare Encrypted Bundle for Client
         // We do NOT decrypt here. We send the components to the client.

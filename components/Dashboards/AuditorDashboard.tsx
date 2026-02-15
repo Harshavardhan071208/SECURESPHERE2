@@ -1,7 +1,7 @@
 
 import React from 'react';
 import GlassCard from '../GlassCard';
-import { MOCK_LOGS } from '../../constants';
+import { MOCK_LOGS, MOCK_USERS } from '../../constants';
 import { ShieldAlert, Filter, Sparkles, ShieldCheck, Lock, Stamp, Bug, ArrowDownToLine } from 'lucide-react';
 import { analyzeSecurityLogs } from '../../services/geminiService';
 
@@ -19,8 +19,13 @@ const AuditorDashboard: React.FC = () => {
   /* State for Logs */
   const [logs, setLogs] = React.useState<any[]>(MOCK_LOGS);
 
+
   React.useEffect(() => {
-    fetch('/api/audit-log')
+    // In a real app, this would come from the user's session context
+    // For now, we'll try to get it from a prop or fallback to MOCK_USERS[0].orgId
+    const targetOrgId = MOCK_USERS.length > 1 ? MOCK_USERS[1].orgId : 'ORG-8921-SCG';
+
+    fetch(`/api/audit-log?orgId=${targetOrgId}`)
       .then(res => res.json())
       .then(data => {
         if (data.logs) setLogs(data.logs);

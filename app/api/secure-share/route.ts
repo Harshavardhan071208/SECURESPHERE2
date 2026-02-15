@@ -176,6 +176,16 @@ export async function POST(req: NextRequest) {
 
         await s3.send(copyCommand);
 
+
+        // 6. Log Audit Event (Blockchain)
+        const { logAuditEvent } = await import('@/lib/audit-logger');
+        await logAuditEvent({
+            orgId: senderOrgId,
+            userId: senderUserId,
+            action: 'SHARE',
+            fileName: originalMetadata['original-name'] || fileId
+        });
+
         return NextResponse.json({
             success: true,
             message: `File securely shared with ${receiverUserId} in ${receiverOrgId}`,

@@ -154,6 +154,16 @@ export async function POST(req: NextRequest) {
             filePath: `s3://${orgBucket}/${keyPath}`
         });
 
+
+        // 9. Log Audit Event (Blockchain)
+        const { logAuditEvent } = await import('@/lib/audit-logger');
+        await logAuditEvent({
+            orgId: orgId,
+            userId: senderId,
+            action: 'UPLOAD',
+            fileName: file.name
+        });
+
         return NextResponse.json({
             success: true,
             message: 'File uploaded securely',
