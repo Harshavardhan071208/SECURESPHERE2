@@ -47,7 +47,7 @@ const UserDashboard: React.FC<{ user: UserProfile }> = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [acknowledgedFiles, setAcknowledgedFiles] = useState<Set<string>>(new Set());
   const [receivedFiles, setReceivedFiles] = useState<Set<string>>(new Set());
-  const [privateKey, setPrivateKey] = useState<string | null>(null); // State for user's Private Key
+
   const keyInputRef = React.useRef<HTMLInputElement>(null); // Ref for key upload input
 
   // Local state for files to support deletion and addition
@@ -454,6 +454,9 @@ const UserDashboard: React.FC<{ user: UserProfile }> = ({ user }) => {
 
 
   // --- SECURE DOWNLOAD LOGIC ---
+  /* State for User's Private Key (Uploaded) */
+  const [userPrivateKey, setUserPrivateKey] = useState<string>('');
+
   const handleKeyUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -462,7 +465,7 @@ const UserDashboard: React.FC<{ user: UserProfile }> = ({ user }) => {
     reader.onload = (event) => {
       const content = event.target?.result as string;
       if (content.includes('BEGIN RSA PRIVATE KEY') || content.includes('BEGIN PRIVATE KEY')) {
-        setPrivateKey(content);
+        setUserPrivateKey(content);
         showToast('Private Key Loaded', 'success', 'You can now decrypt and download files.');
       } else {
         showToast('Invalid Key File', 'error', 'Please upload a valid PEM Private Key.');
@@ -479,9 +482,11 @@ const UserDashboard: React.FC<{ user: UserProfile }> = ({ user }) => {
       }
 
       // Check if Private Key is loaded
-      if (!privateKey) {
+      if (!userPrivateKey) {
         showToast('Decryption Key Missing', 'error', 'Please "Load Private Key" (top right) to decrypt this file.');
-        keyInputRef.current?.click();
+        // Trigger the file input click
+        const fileInput = document.getElementById('privateKeyInput');
+        fileInput?.click();
         return;
       }
 
@@ -501,7 +506,7 @@ const UserDashboard: React.FC<{ user: UserProfile }> = ({ user }) => {
         data.encryptedKey,
         data.encryptedIv,
         data.authTag,
-        privateKey
+        userPrivateKey
       );
 
       // 3. Trigger Download of Decrypted Content
@@ -874,10 +879,10 @@ const UserDashboard: React.FC<{ user: UserProfile }> = ({ user }) => {
           </label>
           <button
             onClick={() => keyInputRef.current?.click()}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${privateKey ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${userPrivateKey ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10'}`}
           >
             <KeyRound size={16} />
-            {privateKey ? 'Key Loaded' : 'Load Private Key'}
+            {userPrivateKey ? 'Key Loaded' : 'Load Private Key'}
           </button>
           <button
             onClick={startUpload}

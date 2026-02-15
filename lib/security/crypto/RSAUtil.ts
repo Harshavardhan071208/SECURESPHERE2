@@ -21,15 +21,23 @@ export class RSAUtil {
      * @param publicKeyPem - The PEM string of the public key
      * @returns The encrypted data as a Base64 string
      */
-    static encrypt(data: Buffer | string, publicKeyPem: string): string {
+    static encrypt(data: Buffer | ArrayBuffer | string, publicKeyPem: string): string {
         const publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
 
-        // Convert Buffer to binary string for forge
+        // Convert Input to Binary String for Forge
         let dataStr = '';
-        if (Buffer.isBuffer(data)) {
+        if (typeof data === 'string') {
+            dataStr = data;
+        } else if (Buffer.isBuffer(data)) {
             dataStr = data.toString('binary');
+        } else if (data instanceof ArrayBuffer) {
+            const view = new Uint8Array(data);
+            for (let i = 0; i < view.length; i++) {
+                dataStr += String.fromCharCode(view[i]);
+            }
         } else {
-            dataStr = data as string;
+            // Fallback for unlikely types
+            dataStr = String(data);
         }
 
         const encrypted = publicKey.encrypt(dataStr, 'RSA-OAEP', {

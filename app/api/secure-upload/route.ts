@@ -76,25 +76,36 @@ export async function POST(req: NextRequest) {
         // --- INTEGRITY & AUTHENTICITY END ---
 
         // 4. Fetch Receiver RSA Public Key
-        // Simulate DB Query
+        // 4. Fetch Receiver RSA Public Key
+        // Priority 1: Check MOCK_USERS
         let receiverPublicKey: string | undefined = MOCK_USERS.find(u => u.id === receiverId)?.publicKey;
-
         let ephemeralPrivateKey: string | undefined;
 
+        // Priority 2: Check S3 User Database
         if (!receiverPublicKey) {
-            console.warn(`[Upload] No public key found for receiver ${receiverId}. Generating ephemeral key for DEMO.`);
+            try {
+                const { getUserById } = await import('@/lib/user-db'); // Dynamic import
+                const user = await getUserById(receiverId);
+                if (user) receiverPublicKey = user.publicKey;
+            } catch (e) {
+                console.error("User DB lookup failed during upload", e);
+            }
+        }
+
+        // Priority 3: Generate Ephemeral (User receives private key via download)
+        // This usually happens ONLY if sending to a NEW user who isn't registered yet?
+        // Or if the directory lookup failed.
+        if (!receiverPublicKey) {
+            console.warn(`[Upload] No public key found for receiver ${receiverId}. Generating ephemeral key pair.`);
             const keyPair = RSAUtil.generateKeyPair();
             receiverPublicKey = keyPair.publicKey;
             ephemeralPrivateKey = keyPair.privateKey; // This is returned to user to "Download"
 
-            // Allow self-decryption for the uploader too if receiver is self
-            if (senderId === receiverId) {
-                // In a real app, we don't need to do anything special, the user gets the private key.
-            }
+            // Should save this ephemeral user to the DB? Maybe not, it's ad-hoc.
         }
 
         // 5. Encrypt AES Key and IV using RSA
-        console.log(`[Upload] Encrypting keys with RSA...`);
+        console.log(`[Upload] Encrypting keys for receiver ${receiverId}...`);
         const encryptedAESKey = RSAUtil.encrypt(aesKey, receiverPublicKey);
         const encryptedIV = RSAUtil.encrypt(iv, receiverPublicKey);
 

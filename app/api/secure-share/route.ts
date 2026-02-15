@@ -72,33 +72,25 @@ export async function POST(req: NextRequest) {
         }
 
         // 3. Fetch Receiver's Public Key
-        // Priority 1: Check MOCK_USERS
+        // Priority 1: Check MOCK_USERS (Static/System Accounts)
         let receiverPublicKey: string | undefined = MOCK_USERS.find(u => u.id === receiverUserId)?.publicKey;
 
-        // Priority 2: Check Directory (data/users.json)
+        // Priority 2: Check S3 User Database (Dynamic/Registered Users)
         if (!receiverPublicKey) {
             try {
-                // Dynamic import to avoid circular dependency issues at top level if any
-                // or just read file directly for speed
-                const fs = require('fs');
-                const path = require('path');
-                const usersPath = path.join(process.cwd(), 'data', 'users.json');
-                if (fs.existsSync(usersPath)) {
-                    const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
-                    const found = users.find((u: any) => u.id === receiverUserId);
-                    if (found) receiverPublicKey = found.publicKey;
-                }
+                const { getUserById } = await import('@/lib/user-db'); // Dynamic import to avoid circular dep issues
+                const user = await getUserById(receiverUserId);
+                if (user) receiverPublicKey = user.publicKey;
             } catch (e) {
-                console.error("Directory lookup failed", e);
+                console.error("User DB lookup failed", e);
             }
         }
 
         // Priority 3: Ephemeral (Last Resort - User won't be able to decrypt unless we email them the key)
         if (!receiverPublicKey) {
-            console.warn(`[Secure Share] Receiver ${receiverUserId} not found in directory. Generating ephemeral key.`);
+            console.warn(`[Secure Share] Receiver ${receiverUserId} not found in directory. Generating ephemeral key (This file will likely be unreadable by receiver).`);
             const keyPair = RSAUtil.generateKeyPair();
             receiverPublicKey = keyPair.publicKey;
-            // Ideally we would return this private key to the sender to give to the receiver out-of-band
         }
 
         // 4. Encrypt the AES Key for the Receiver

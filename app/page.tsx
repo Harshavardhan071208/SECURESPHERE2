@@ -517,11 +517,14 @@ export default function Home() {
       const { isSignedIn, nextStep } = await signIn({ username: email, password });
 
       if (isSignedIn) {
-        // --- ORG VALIDATION START ---
+        // --- ORG & ID VALIDATION START ---
+        let attributes: any = {};
         try {
-          const attributes = await fetchUserAttributes();
+          attributes = await fetchUserAttributes();
           const userOrgId = attributes['custom:org_id'];
+          const userUniqueId = attributes['custom:user_id'];
 
+          // 1. Validate Org Strictness
           // If the user has an Org ID in Cognito, ensure it matches the portal they are trying to enter
           if (userOrgId && selectedOrg && userOrgId !== selectedOrg.id) {
             console.warn(`Org Mismatch! User belongs to ${userOrgId} but tried to access ${selectedOrg.id}`);
@@ -530,23 +533,22 @@ export default function Home() {
             setIsProcessing(false);
             return;
           }
+
+          // 2. Validate Unique ID (Prevent Spoofing)
+          // If the user entered an ID manually, ensure it matches what is in their token
+          if (userUniqueId && uniqueId && uniqueId.trim() !== userUniqueId) {
+            console.warn(`ID Mismatch! Token: ${userUniqueId}, Input: ${uniqueId}`);
+            await signOut();
+            setLoginError(`Access Denied: The User ID you entered does not match your registered account (${userUniqueId}).`);
+            setIsProcessing(false);
+            return;
+          }
+
         } catch (attrError) {
           console.error("Failed to fetch user attributes for validation:", attrError);
-          // Optional: decide if you want to block access if validation fails
+          // Only blocking critical errors if necessary
         }
-        // --- ORG VALIDATION END ---
-        // Check if user is pending approval (Simulated DB check)
-        /* 
-        const pendingRequests = JSON.parse(localStorage.getItem('pending_registrations') || '[]');
-        const isPending = pendingRequests.find((r: any) => r.email === email && r.status === 'PENDING');
-
-        if (isPending) {
-          signOut();
-          setLoginError('Account is pending Manager approval.');
-          setIsProcessing(false);
-          return;
-        }
-        */
+        // --- ORG & ID VALIDATION END ---
 
         // In a real app, you'd fetch the user attributes here
         let mockUserForNow = MOCK_USERS.find(u => u.email === email);
@@ -594,15 +596,17 @@ export default function Home() {
           };
         } else {
           // Create new session user (Registration scenario usually handles this, but for loose logins:)
-          // We should PROBABLY fail here if strict mode, but let's keep the dynamic creation for new users
-          // However, if we are creating a dynamic user, we bind them to the selected Org.
+          // We use the attributes from Cognito if available to enforce correctness
+          const tokenOrgId = attributes['custom:org_id'];
+          const tokenUserId = attributes['custom:user_id'];
+
           mockUserForNow = {
-            id: `usr-${Date.now()}`,
+            id: tokenUserId || `usr-${Date.now()}`,
             name: email.split('@')[0],
             email: email,
             role: selectedRole || UserRole.USER,
             organization: selectedOrg?.name || 'Unknown Org',
-            orgId: selectedOrg?.id || 'org_unknown'
+            orgId: tokenOrgId || selectedOrg?.id || 'org_unknown' // TRUST TOKEN over Selection
           };
         }
 
