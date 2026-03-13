@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import GlassCard from '../GlassCard';
 import { MOCK_ORGS, MOCK_LOGS } from '../../constants';
 import {
@@ -7,12 +7,64 @@ import {
   Activity,
   ShieldAlert,
   CheckCircle,
+  XCircle,
   MoreVertical,
   Globe,
   ArrowUpRight
 } from 'lucide-react';
 
 const GovernanceDashboard: React.FC = () => {
+  const [orgs, setOrgs] = useState<any[]>(MOCK_ORGS);
+
+  useEffect(() => {
+    fetch('/api/orgs')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setOrgs(data);
+        }
+      })
+      .catch(err => {
+        console.error("Failed to fetch orgs globally:", err);
+        const pendingOrgs = JSON.parse(localStorage.getItem('pending_org_registrations') || '[]');
+        const statusOverrides = pendingOrgs.reduce((acc: any, curr: any) => ({...acc, [curr.id]: curr.status}), {});
+        const combinedOrgs = [...MOCK_ORGS];
+        pendingOrgs.forEach((pOrg: any) => {
+          if (!combinedOrgs.find(o => o.id === pOrg.id)) {
+            combinedOrgs.push(pOrg);
+          }
+        });
+
+        const finalized = combinedOrgs.map(o => statusOverrides[o.id] ? { ...o, status: statusOverrides[o.id] } : o);
+        setOrgs(finalized);
+      });
+  }, []);
+
+  const handleUpdateStatus = (orgId: string, status: string) => {
+    const orgToUpdate = orgs.find(o => o.id === orgId) || MOCK_ORGS.find(o => o.id === orgId);
+    if (!orgToUpdate) return;
+    
+    const updatedOrg = { ...orgToUpdate, status };
+
+    // Update global state through API
+    fetch('/api/orgs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedOrg)
+    }).catch(console.error);
+
+    const pendingOrgs = JSON.parse(localStorage.getItem('pending_org_registrations') || '[]');
+    
+    // Update local storage representation natively as fallback
+    let updatedPending = pendingOrgs.map((o: any) => o.id === orgId ? updatedOrg : o);
+    
+    if (!pendingOrgs.find((o: any) => o.id === orgId)) {
+        updatedPending = [...updatedPending, updatedOrg];
+    }
+    
+    localStorage.setItem('pending_org_registrations', JSON.stringify(updatedPending));
+    setOrgs(orgs.map(o => o.id === orgId ? updatedOrg : o));
+  };
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -35,7 +87,7 @@ const GovernanceDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Registered Orgs</p>
-              <p className="text-3xl font-bold">{MOCK_ORGS.length}</p>
+              <p className="text-3xl font-bold">{orgs.length}</p>
             </div>
           </div>
         </GlassCard>
@@ -57,7 +109,7 @@ const GovernanceDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Active Nodes</p>
-              <p className="text-3xl font-bold">{MOCK_ORGS.filter(o => o.status === 'active').length}</p>
+              <p className="text-3xl font-bold">{orgs.filter(o => o.status === 'active' || o.status === 'Accepted' || o.status === 'accepted').length}</p>
             </div>
           </div>
         </GlassCard>
@@ -76,7 +128,7 @@ const GovernanceDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {MOCK_ORGS.map((org) => (
+                {orgs.map((org) => (
                   <tr key={org.id} className="group hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -90,9 +142,12 @@ const GovernanceDashboard: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${org.status === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
-                        }`}>
-                        {org.status}
+                      <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                        org.status === 'active' || org.status === 'Accepted' || org.status === 'accepted' ? 'bg-emerald-500/10 text-emerald-400' :
+                        org.status === 'rejected' || org.status === 'Rejected' ? 'bg-rose-500/10 text-rose-400' :
+                        'bg-amber-500/10 text-amber-400'
+                      }`}>
+                        {org.status === 'active' ? 'Accepted' : org.status.charAt(0).toUpperCase() + org.status.slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-xs opacity-50">
@@ -100,10 +155,23 @@ const GovernanceDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {org.status === 'pending' && (
-                          <button className="p-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20">
-                            <CheckCircle size={14} />
-                          </button>
+                        {(org.status === 'pending' || org.status === 'Pending') && (
+                          <>
+                            <button 
+                              onClick={() => handleUpdateStatus(org.id, 'Accepted')}
+                              className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all shadow-lg shadow-emerald-500/10"
+                              title="Accept"
+                            >
+                              <CheckCircle size={14} />
+                            </button>
+                            <button 
+                              onClick={() => handleUpdateStatus(org.id, 'Rejected')}
+                              className="p-2 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all shadow-lg shadow-rose-500/10"
+                              title="Reject"
+                            >
+                              <XCircle size={14} />
+                            </button>
+                          </>
                         )}
                         <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 opacity-40 hover:opacity-100 transition-all">
                           <MoreVertical size={14} />

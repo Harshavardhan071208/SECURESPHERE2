@@ -4,7 +4,8 @@ import GlassCard from '../GlassCard';
 import GlassToast from '../GlassToast';
 import { MOCK_FILES } from '../../constants';
 import { UserProfile, FileMetadata } from '../../types';
-import { ClientCrypto } from '@/lib/security/crypto/ClientCrypto'; // Import ClientCrypto utility
+import { ClientCrypto } from '@/lib/security/crypto/ClientCrypto';
+import { addWatermark } from '@/lib/security/WatermarkService'; // Import Watermark Service
 
 import {
   Upload,
@@ -509,8 +510,15 @@ const UserDashboard: React.FC<{ user: UserProfile }> = ({ user }) => {
         userPrivateKey
       );
 
-      // 3. Trigger Download of Decrypted Content
-      const url = window.URL.createObjectURL(decryptedBlob);
+      // 3. Apply Watermark (Client-Side)
+      const watermarkedBlob = await addWatermark(
+        decryptedBlob,
+        user.id, // User Unique ID
+        data.fileName || fileName
+      );
+
+      // 4. Trigger Download of Watermarked Content
+      const url = window.URL.createObjectURL(watermarkedBlob);
       const link = document.createElement('a');
       link.href = url;
       link.download = data.fileName || fileName; // Use clean name from server or fallback
@@ -519,14 +527,14 @@ const UserDashboard: React.FC<{ user: UserProfile }> = ({ user }) => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
 
-      showToast('Download Complete', 'success', 'File decrypted and saved successfully.');
+      showToast('Download Complete', 'success', 'File decrypted, watermarked, and saved successfully.');
 
       // Notify user (Local Log Update)
       setSessionLogs(prev => [{
         id: Math.random().toString(36),
         fileName: fileName,
         status: 'Clean',
-        timestamp: new Date().toLocaleTimeString() + ' (Decrypted)'
+        timestamp: new Date().toLocaleTimeString() + ' (Decrypted & Watermarked)'
       }, ...prev]);
 
     } catch (err: any) {

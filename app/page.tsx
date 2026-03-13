@@ -100,7 +100,7 @@ const LandingView = ({ onEnter, onRegister, onAdmin }: { onEnter: () => void, on
   </div>
 );
 
-const OrgSelectView = ({ onBack, onSelect }: { onBack: () => void, onSelect: (org: any) => void }) => (
+const OrgSelectView = ({ onBack, onSelect, activeOrgs }: { onBack: () => void, onSelect: (org: any) => void, activeOrgs: any[] }) => (
   <div className="max-w-2xl w-full animate-in slide-in-from-bottom-8 duration-600 text-center">
     <button onClick={onBack} className="flex items-center gap-2 opacity-40 hover:opacity-100 mb-6 text-xs font-bold uppercase tracking-widest transition-all mx-auto">
       <ChevronLeft size={16} /> Back
@@ -108,7 +108,7 @@ const OrgSelectView = ({ onBack, onSelect }: { onBack: () => void, onSelect: (or
     <h2 className="text-3xl font-black mb-2">Select Organization</h2>
     <p className="opacity-40 mb-10">Which vault entity are you identifying with?</p>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {MOCK_ORGS.map((org) => (
+      {activeOrgs.map((org) => (
         <div
           key={org.id} onClick={() => onSelect(org)}
           className="glass p-8 rounded-3xl border border-white/10 hover:border-indigo-500/50 hover:bg-white/5 cursor-pointer transition-all group flex flex-col items-center"
@@ -353,6 +353,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isProcessing, setIsProcessing] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [displayOrgs, setDisplayOrgs] = useState<any[]>(MOCK_ORGS);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -364,6 +365,38 @@ export default function Home() {
     if (theme === 'light') document.body.classList.add('light-mode');
     else document.body.classList.remove('light-mode');
   }, [theme]);
+
+  // Load organizations
+  useEffect(() => {
+    if (view === 'ORG_SELECT') {
+      fetch('/api/orgs')
+        .then(res => res.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                const mockOrgIds = new Set(MOCK_ORGS.map(o => o.id));
+                setDisplayOrgs(data.filter((o: any) => mockOrgIds.has(o.id) || o.status === 'active' || o.status === 'Accepted'));
+            }
+        })
+        .catch(err => {
+            console.error("Failed to fetch orgs, falling back to local storage:", err);
+            const pendingOrgs = JSON.parse(localStorage.getItem('pending_org_registrations') || '[]');
+            const statusOverrides = pendingOrgs.reduce((acc: any, curr: any) => ({...acc, [curr.id]: curr.status}), {});
+            
+            const combinedOrgs = [...MOCK_ORGS];
+            
+            pendingOrgs.forEach((pOrg: any) => {
+              if (!combinedOrgs.find(o => o.id === pOrg.id)) {
+                combinedOrgs.push(pOrg);
+              }
+            });
+            
+            const finalized = combinedOrgs.map(o => statusOverrides[o.id] ? { ...o, status: statusOverrides[o.id] } : o);
+            // Show all from MOCK_ORGS + only 'active' from new dynamic registrations
+            const mockOrgIds = new Set(MOCK_ORGS.map(o => o.id));
+            setDisplayOrgs(finalized.filter(o => mockOrgIds.has(o.id) || o.status === 'active' || o.status === 'Accepted'));
+        });
+    }
+  }, [view]);
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
@@ -908,6 +941,28 @@ export default function Home() {
     // Generate Admin ID
     const newAdminId = `ADM-${timestamp}-${random}`;
 
+    const newOrg = {
+      id: newOrgId,
+      name: orgName,
+      industry: industry,
+      status: 'pending',
+      onboardedDate: new Date().toISOString().split('T')[0],
+      totalUsers: 1,
+      totalFiles: 0,
+      adminEmail: adminEmail // Only explicitly used locally optionally, or captured backend via mapping
+    };
+
+    // Save strictly to Backend API for global viewing (S3 storage)
+    fetch('/api/orgs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOrg)
+    }).catch(console.error);
+
+    // Keep localStorage as fallback during session runtime if internet skips
+    const pendingOrgs = JSON.parse(localStorage.getItem('pending_org_registrations') || '[]');
+    localStorage.setItem('pending_org_registrations', JSON.stringify([...pendingOrgs, newOrg]));
+
     setTimeout(() => {
       setIsProcessing(false);
       alert(`Organization Onboarding Successful!\n\nOrganization ID: ${newOrgId}\nAdmin ID: ${newAdminId}\n\nCredentials sent to ${adminEmail}. Please wait for Platform Admin approval.`);
@@ -961,7 +1016,7 @@ export default function Home() {
           />
         )}
         {view === 'ORG_SELECT' && (
-          <OrgSelectView onBack={() => setView('LANDING')} onSelect={(org) => { setSelectedOrg(org); setView('ROLE_SELECT'); }} />
+          <OrgSelectView activeOrgs={displayOrgs} onBack={() => setView('LANDING')} onSelect={(org) => { setSelectedOrg(org); setView('ROLE_SELECT'); }} />
         )}
         {view === 'ROLE_SELECT' && (
           <RoleSelectView org={selectedOrg} onBack={() => setView('ORG_SELECT')} onSelect={(role) => { setSelectedRole(role); setView('LOGIN'); }} />
